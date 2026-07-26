@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoruVar</title>
+<style>
+  :root{
+    --bg1:#0f172a; --bg2:#1e293b; --accent:#6366f1; --accent2:#8b5cf6;
+    --card:#1e293b; --text:#f1f5f9; --muted:#94a3b8;
+    --correct:#22c55e; --wrong:#ef4444; --gold:#facc15;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--text); display:flex; align-items:flex-start; justify-content:center;
+    padding:20px;
+  }
+  .layout{width:100%; max-width:920px; display:grid; grid-template-columns:1fr; gap:18px;}
+  @media(min-width:820px){
+    .layout.with-board{grid-template-columns:1fr 300px;}
+  }
+  .top-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap;}
+  .badge{background:var(--card); padding:6px 12px; border-radius:20px; font-size:13px; color:var(--muted); border:1px solid #334155;}
+  .who{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .avatar-mini{
+    width:30px; height:30px; border-radius:50%; background:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color:#fff;
+  }
+  .diff-select{
+    background:var(--card); border:1px solid #334155; color:var(--text);
+    padding:6px 10px; border-radius:20px; font-size:13px; cursor:pointer;
+  }
+  .timer-ring{position:relative; width:54px; height:54px;}
+  .timer-ring svg{transform:rotate(-90deg);}
+  .timer-ring circle{fill:none; stroke-width:5;}
+  .timer-bg{stroke:#334155;}
+  .timer-fg{stroke:var(--accent); stroke-linecap:round; transition:stroke-dashoffset 1s linear;}
+  .timer-num{
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px;
+  }
+  .card{
+    background:var(--card); border-radius:18px; padding:28px;
+    border:1px solid #334155; box-shadow:0 10px 40px rgba(0,0,0,.35);
+  }
+  .cat{color:var(--accent2); font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;}
+  .diff-tag{font-size:11px; padding:3px 8px; border-radius:10px; background:#0f172a; border:1px solid #334155; text-transform:none; letter-spacing:0; font-weight:600;}
+  .diff-tag.easy{color:#4ade80;}
+  .diff-tag.medium{color:#facc15;}
+  .diff-tag.hard{color:#f87171;}
+  #question{font-size:20px; font-weight:600; line-height:1.5; min-height:60px; margin-bottom:22px;}
+  .options{display:grid; gap:12px;}
+  .opt{
+    background:#0f172a; border:1px solid #334155; color:var(--text);
+    padding:14px 16px; border-radius:12px; text-align:left; font-size:15px;
+    cursor:pointer; transition:.15s; display:flex; gap:10px; align-items:center;
+  }
+  .opt:hover:not(:disabled){border-color:var(--accent); background:#152036;}
+  .opt:disabled{cursor:default;}
+  .opt.correct{background:rgba(34,197,94,.15); border-color:var(--correct); color:#bbf7d0;}
+  .opt.wrong{background:rgba(239,68,68,.15); border-color:var(--wrong); color:#fecaca;}
+  .letter{
+    width:26px; height:26px; border-radius:50%; background:#1e293b; border:1px solid #475569;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;
+  }
+  .explain{margin-top:16px; font-size:13px; color:var(--muted); background:#0f172a; border:1px solid #334155; border-radius:10px; padding:10px 14px; display:none;}
+  .points-toast{margin-top:10px; font-size:13px; font-weight:700; display:none;}
+  .points-toast.gain{color:var(--correct);}
+  .points-toast.zero{color:var(--muted);}
+  .footer-row{display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:10px;}
+  .score{font-size:13px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap;}
+  .score b{color:var(--text);}
+  .btn{
+    background:var(--accent); color:#fff; border:none; padding:10px 18px;
+    border-radius:10px; font-size:14px; font-weight:600; cursor:pointer;
+  }
+  .btn:hover{background:#4f46e5;}
+  .btn:disabled{opacity:.6; cursor:not-allowed;}
+  .btn.secondary{background:transparent; border:1px solid #475569; color:var(--muted);}
+  .btn.secondary:hover{border-color:var(--accent); color:var(--text);}
+  .loading{display:flex; align-items:center; gap:10px; color:var(--muted); font-size:14px;}
+  .spinner{width:16px; height:16px; border:2px solid #334155; border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .setup{
+    background:var(--card); border-radius:18px; padding:32px; border:1px solid #334155;
+    max-width:420px; margin:40px auto 0 auto; text-align:center;
+  }
+  .setup h2{margin-top:0;}
+  .setup p{color:var(--muted); font-size:14px; margin-bottom:20px;}
+  .setup label{display:block; text-align:left; font-size:12px; color:var(--muted); margin-bottom:6px;}
+  .setup input, .setup select{
+    width:100%; padding:14px 16px; border-radius:10px; border:1px solid #334155;
+    background:#0f172a; color:var(--text); font-size:15px; margin-bottom:16px; text-align:center;
+  }
+  .setup select{text-align:left;}
+  .name-error{color:var(--wrong); font-size:13px; margin:-10px 0 14px 0; display:none;}
+  .hidden{display:none !important;}
+
+  .board{background:var(--card); border-radius:18px; padding:20px; border:1px solid #334155; height:fit-content;}
+  .board h3{margin:0 0 14px 0; font-size:15px; display:flex; align-items:center; gap:6px;}
+  .board-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto;}
+  .board-item{
+    display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:#0f172a;
+    border:1px solid #1e293b; font-size:13px;
+  }
+  .board-item.me{border-color:var(--accent); background:rgba(99,102,241,.1);}
+  .rank{width:20px; text-align:center; font-weight:700; color:var(--muted); font-size:12px;}
+  .rank.top1{color:var(--gold);}
+  .board-name{flex:1; overflow:hidden;}
+  .board-name .n{font-weight:600; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .board-name .sub{font-size:11px; color:var(--muted);}
+  .board-score{font-weight:700; color:var(--accent2); white-space:nowrap;}
+  .board-empty{color:var(--muted); font-size:13px; text-align:center; padding:14px 0;}
+  .board-refresh{font-size:11px; color:var(--muted); text-align:center; margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="layout" id="layout">
+
+  <div class="setup" id="setup">
+    <h2>Hesap aç</h2>
+    <p>Devam etmek için bir isim gir</p>
+
+    <label>İsmin</label>
+    <input type="text" id="nameInput" placeholder="İsmin" maxlength="20">
+    <div class="name-error" id="nameError">Bu isim uygun değil, lütfen başka bir isim gir.</div>
+
+    <label>Zorluk Seviyesi</label>
+    <select id="difficultySelect">
+      <option value="easy">Kolay (soru başı 10 puan)</option>
+      <option value="medium" selected>Orta (soru başı 20 puan)</option>
+      <option value="hard">Zor (soru başı 30 puan)</option>
+    </select>
+
+    <button class="btn" id="startBtn" style="width:100%;">Başla 🚀</button>
+  </div>
+
+  <div id="quizArea" class="hidden">
+    <div>
+      <div class="top-bar">
+        <div class="who">
+          <div class="avatar-mini" id="avatarMini">?</div>
+          <div class="badge" id="topicBadge">Genel Kültür</div>
+          <select class="diff-select" id="liveDifficultySelect" title="Zorluk seviyesini değiştir">
+            <option value="easy">Kolay 🟢</option>
+            <option value="medium">Orta 🟡</option>
+            <option value="hard">Zor 🔴</option>
+          </select>
+        </div>
+        <div class="timer-ring">
+          <svg width="54" height="54">
+            <circle class="timer-bg" cx="27" cy="27" r="22"></circle>
+            <circle class="timer-fg" id="timerFg" cx="27" cy="27" r="22"
+                    stroke-dasharray="138.2" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="timer-num" id="timerNum">60</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cat">
+          <span id="catLabel">Soru</span>
+          <span class="diff-tag" id="diffTag">Orta</span>
+        </div>
+        <div id="question">Hazırlanıyor...</div>
+        <div class="options" id="options"></div>
+        <div class="explain" id="explainBox"></div>
+        <div class="points-toast" id="pointsToast"></div>
+        <div id="loadingRow" class="loading hidden">
+          <div class="spinner"></div> <span id="loadingText">Yeni soru üretiliyor...</span>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <div class="score">
+          <span><b id="totalCount">0</b> soru</span>
+          <span><b id="correctCount">0</b> doğru</span>
+          <span><b id="pointsCount">0</b> puan</span>
+        </div>
+        <button class="btn secondary" id="skipBtn">Sıradaki ⏭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="board hidden" id="board">
+    <h3>🏆 En Yüksek Puanlar</h3>
+    <ul class="board-list" id="boardList"></ul>
+    <div class="board-empty hidden" id="boardEmpty">Henüz kimse puan yapmadı.</div>
+    <div class="board-refresh">Her 10 saniyede güncellenir</div>
+  </div>
+
+</div>
+
+<script>
+// ---- Dahili yapılandırma (düz metin) ----
+const CFG = {
+  groqKey: "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",
+  binKey: "$2a$10$7BdZWbUrT1T7A.hiLShGWOnyS.R/ARyH/E9m5MJ6yPG5RtLLcsOhu",
+  binId: "6a65f65dda38895dfe91aa4d",
+  model: "llama-3.3-70b-versatile",
+  topic: "",
+  interval: 60,
+  maxGenerationAttempts: 3
+};
+
+const DIFF_LABELS = { easy: "Kolay", medium: "Orta", hard: "Zor" };
+const DIFF_POINTS = { easy: 10, medium: 20, hard: 30 };
+const DIFF_PROMPTS = {
+  easy: "Kolay seviyede sorular üret: çoğu insanın bileceği, temel genel kültür düzeyinde, açık ve net sorular.",
+  medium: "Orta zorlukta sorular üret: ortalama bir genel kültür bilgisiyle cevaplanabilecek, biraz düşündürecek sorular.",
+  hard: "Zor sorular üret: uzmanlık/detay gerektiren, az bilinen ama yine de doğrulanabilir kesin bir cevabı olan sorular."
+};
+
+const LS_KEY = "quiz_player_v3";
+
+const layoutEl = document.getElementById('layout');
+const setupEl = document.getElementById('setup');
+const quizArea = document.getElementById('quizArea');
+const boardEl = document.getElementById('board');
+const nameInput = document.getElementById('nameInput');
+const nameError = document.getElementById('nameError');
+const difficultySelect = document.getElementById('difficultySelect');
+const liveDifficultySelect = document.getElementById('liveDifficultySelect');
+const startBtn = document.getElementById('startBtn');
+
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const catLabel = document.getElementById('catLabel');
+const diffTag = document.getElementById('diffTag');
+const topicBadge = document.getElementById('topicBadge');
+const avatarMini = document.getElementById('avatarMini');
+const timerNum = document.getElementById('timerNum');
+const timerFg = document.getElementById('timerFg');
+const loadingRow = document.getElementById('loadingRow');
+const loadingText = document.getElementById('loadingText');
+const explainBox = document.getElementById('explainBox');
+const pointsToast = document.getElementById('pointsToast');
+const correctCountEl = document.getElementById('correctCount');
+const totalCountEl = document.getElementById('totalCount');
+const pointsCountEl = document.getElementById('pointsCount');
+const skipBtn = document.getElementById('skipBtn');
+const boardList = document.getElementById('boardList');
+const boardEmpty = document.getElementById('boardEmpty');
+
+let playerName = "";
+let difficulty = "medium";
+let countdown, boardTimer, remaining;
+let correctCount = 0, totalCount = 0, totalPoints = 0;
+let askedQuestions = [];
+let answered = false;
+const RADIUS = 22;
+const CIRC = 2 * Math.PI * RADIUS;
+
+function loadSaved(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(!raw) return;
+  try{
+    const saved = JSON.parse(raw);
+    if(saved.name) nameInput.value = saved.name;
+    if(saved.difficulty) difficultySelect.value = saved.difficulty;
+  }catch(e){}
+}
+loadSaved();
+
+// ---- Groq çağrısı (ortak yardımcı) ----
+async function callGroq(systemPrompt, userPrompt, temperature){
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + CFG.groqKey
+    },
+    body: JSON.stringify({
+      model: CFG.model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      temperature: temperature,
+      response_format: { type: "json_object" }
+    })
+  });
+  if(!res.ok){
+    const errText = await res.text();
+    throw new Error(`Groq API hatası (${res.status}): ${errText}`);
+  }
+  const data = await res.json();
+  const raw = data.choices?.[0]?.message?.content;
+  if(!raw) throw new Error("Model boş cevap döndü.");
+  return JSON.parse(raw);
+}
+
+// ---- İsim moderasyonu ----
+async function isNameAppropriate(name){
+  const systemPrompt = `Sen bir içerik moderatörüsün. Sana bir kullanıcı adı verilecek.
+Bu isimde küfür, hakaret, cinsel içerik, ırkçı/ayrımcı ifade, nefret söylemi veya açıkça uygunsuz bir kelime olup olmadığına karar ver.
+Sadece şu JSON formatında cevap ver, başka hiçbir şey yazma:
+{"appropriate": true} veya {"appropriate": false}
+Normal isimler, takma adlar, masum kelimeler her zaman "true" olmalı. Sadece gerçekten uygunsuz olanlar "false" olsun.`;
+  try{
+    const parsed = await callGroq(systemPrompt, `İsim: "${name}"`, 0);
+    return parsed.appropriate !== false;
+  }catch(e){
+    return true;
+  }
+}
+
+startBtn.addEventListener('click', async () => {
+  const name = nameInput.value.trim();
+  nameError.style.display = "none";
+  if(!name){ alert("Lütfen bir isim gir."); return; }
+
+  startBtn.disabled = true;
+  startBtn.textContent = "Kontrol ediliyor...";
+
+  const ok = await isNameAppropriate(name);
+
+  startBtn.disabled = false;
+  startBtn.textContent = "Başla 🚀";
+
+  if(!ok){
+    nameError.style.display = "block";
+    return;
+  }
+
+  playerName = name;
+  difficulty = difficultySelect.value;
+  localStorage.setItem(LS_KEY, JSON.stringify({ name, difficulty }));
+
+  setupEl.classList.add('hidden');
+  quizArea.classList.remove('hidden');
+  boardEl.classList.remove('hidden');
+  layoutEl.classList.add('with-board');
+
+  topicBadge.textContent = CFG.topic ? CFG.topic : "Genel Kültür";
+  avatarMini.textContent = playerName.charAt(0).toUpperCase();
+  liveDifficultySelect.value = difficulty;
+  updateDiffTag();
+
+  correctCount = 0; totalCount = 0; totalPoints = 0; askedQuestions = [];
+  updateScoreUI();
+  nextQuestion(true);
+  refreshBoard();
+  boardTimer = setInterval(refreshBoard, 10000);
+});
+
+nameInput.addEventListener('keydown', e => { if(e.key === 'Enter') startBtn.click(); });
+skipBtn.addEventListener('click', () => nextQuestion(true));
+
+// Oyun içinde zorluk değiştirme — bir sonraki sorudan itibaren geçerli olur
+liveDifficultySelect.addEventListener('change', () => {
+  difficulty = liveDifficultySelect.value;
+  const saved = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+  saved.difficulty = difficulty;
+  localStorage.setItem(LS_KEY, JSON.stringify(saved));
+  updateDiffTag();
+});
+
+function updateDiffTag(){
+  diffTag.textContent = DIFF_LABELS[difficulty] + " · " + DIFF_POINTS[difficulty] + " puan";
+  diffTag.className = "diff-tag " + difficulty;
+}
+
+function updateScoreUI(){
+  correctCountEl.textContent = correctCount;
+  totalCountEl.textContent = totalCount;
+  pointsCountEl.textContent = totalPoints;
+}
+
+// ---- Soru üretimi ----
+async function generateQuestionRaw(){
+  const genDifficulty = difficulty; // soru üretilirken geçerli olan zorluk anlık olarak yakalanır
+  const topicPart = CFG.topic ? `Konu: "${CFG.topic}".` : "Konu: genel kültür, tarih, coğrafya, bilim, sanat gibi çeşitli alanlardan rastgele seç.";
+  const diffPart = DIFF_PROMPTS[genDifficulty] || DIFF_PROMPTS.medium;
+  const avoid = askedQuestions.length
+    ? `Daha önce şu sorular soruldu, bunları KESİNLİKLE TEKRAR ETME: ${askedQuestions.slice(-15).join(" | ")}`
+    : "";
+  const previousTypeRule = askedQuestions.length
+    ? `\nÇOK ÖNEMLİ KURAL: Önceki soru şuydu: "${askedQuestions[askedQuestions.length - 1]}". LÜTFEN BUNDAN TAMAMEN FARKLI BİR KATEGORİDE (örneğin önceki tarihse şimdi bilim, sanat veya coğrafya olsun) VE FARKLI TÜRDE BİR SORU YAZ. Hep aynı temada takılı kalma!`
+    : "";
+
+  const systemPrompt = `Sen Türkçe konuşan, doğruluğa çok önem veren bir bilgi yarışması soru üreticisisin.
+${topicPart}
+${diffPart}
+${avoid}
+${previousTypeRule}
+
+KESİN KURALLAR (halüsinasyonu önlemek için):
+- Farklı konulardan ve farklı kategorilerden soru seçerek çeşitliliği sağla.
+- Sadece %100 doğrulanabilir, genel olarak kabul görmüş, tartışmasız gerçek bilgiler kullan.
+- Sayılar, tarihler, isimler, unvanlar, dini/tarihi/bilimsel detaylar konusunda ASLA uydurma bilgi üretme.
+- Eğer bir bilgiden tam emin değilsen, o soruyu SORMA; bunun yerine kesin bildiğin, tartışmasız bir soru sor.
+- Şüpheli, az bilinen, tartışmalı veya kaynağı belirsiz "ilginç bilgi" tarzı sorulardan kaçın.
+
+Yalnızca aşağıdaki JSON formatında, başka hiçbir metin eklemeden cevap ver:
+{"category":"kısa kategori adı","question":"soru metni","options":["A seçeneği","B seçeneği","C seçeneği","D seçeneği"],"correctIndex":0,"explanation":"kısa açıklama (1 cümle)"}
+- correctIndex, doğru seçeneğin options dizisindeki index'i olsun (0,1,2 veya 3).`;
+
+  const q = await callGroq(systemPrompt, "Yeni, tamamen farklı bir alandan ve daha önce sorulmamış bir soru üret.", 0.8);
+  q.difficulty = genDifficulty; // bu soruya ait zorluk, üretim anına göre sabitlenir
+  return q;
+}
+
+// ---- Doğrulama katmanı ----
+async function verifyQuestion(q){
+  const systemPrompt = `Sen titiz bir doğruluk kontrolcüsüsün (fact-checker).
+Sana bir çoktan seçmeli soru, seçenekleri ve "doğru" olarak işaretlenmiş cevap verilecek.
+Görevin: Bu sorunun mantıklı, net ve doğru olup olmadığını, ve işaretlenen cevabın gerçekten doğru olup olmadığını değerlendirmek.
+Eğer soru hatalıysa, belirsizse, tartışmalıysa veya işaretlenen cevap yanlışsa "valid": false döndür.
+Eğer doğru cevap options içinde var ama başka bir index'teyse, doğru index'i "correctIndex" alanında belirt.
+Sadece şu JSON formatında cevap ver:
+{"valid": true veya false, "correctIndex": 0}`;
+
+  const userPrompt = `Soru: ${q.question}
+Seçenekler: ${q.options.map((o,i) => `${i}: ${o}`).join(", ")}
+İşaretlenen doğru cevap index'i: ${q.correctIndex}`;
+
+  try{
+    return await callGroq(systemPrompt, userPrompt, 0);
+  }catch(e){
+    return { valid: true, correctIndex: q.correctIndex };
+  }
+}
+
+async function generateVerifiedQuestion(){
+  let lastQuestion = null;
+  for(let attempt = 1; attempt <= CFG.maxGenerationAttempts; attempt++){
+    loadingText.textContent = attempt === 1 ? "Soru üretiliyor..." : `Soru doğrulanıyor, tekrar deneniyor (${attempt})...`;
+    const q = await generateQuestionRaw();
+    lastQuestion = q;
+
+    loadingText.textContent = "Bilgi doğruluğu kontrol ediliyor...";
+    const check = await verifyQuestion(q);
+
+    if(check.valid !== false){
+      if(typeof check.correctIndex === "number" && check.correctIndex >= 0 && check.correctIndex < q.options.length){
+        q.correctIndex = check.correctIndex;
+      }
+      return q;
+    }
+  }
+  return lastQuestion;
+}
+
+async function nextQuestion(resetTimer){
+  clearInterval(countdown);
+  answered = false;
+  questionEl.textContent = "";
+  optionsEl.innerHTML = "";
+  explainBox.style.display = "none";
+  explainBox.textContent = "";
+  pointsToast.style.display = "none";
+  loadingRow.classList.remove('hidden');
+
+  try{
+    const q = await generateVerifiedQuestion();
+    loadingRow.classList.add('hidden');
+    renderQuestion(q);
+    if(resetTimer !== false) startTimer();
+  }catch(err){
+    loadingRow.classList.add('hidden');
+    questionEl.textContent = "⚠️ Hata: " + err.message;
+    optionsEl.innerHTML = `<button class="btn" onclick="nextQuestion(true)">Tekrar Dene</button>`;
+  }
+}
+
+function renderQuestion(q){
+  askedQuestions.push(q.question); // Soruyu atlama durumunda bile tekrara düşmemesi için diziye burada ekliyoruz
+  catLabel.textContent = q.category || "Soru";
+  questionEl.textContent = q.question;
+  optionsEl.innerHTML = "";
+  const letters = ["A","B","C","D"];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = "opt";
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectAnswer(i, q));
+    optionsEl.appendChild(btn);
+  });
+  // Bu soru hangi zorlukta üretildiyse etiket onu göstersin
+  diffTag.textContent = DIFF_LABELS[q.difficulty || difficulty] + " · " + DIFF_POINTS[q.difficulty || difficulty] + " puan";
+  diffTag.className = "diff-tag " + (q.difficulty || difficulty);
+}
+
+function selectAnswer(selectedIndex, q){
+  if(answered) return;
+  answered = true;
+  totalCount++;
+
+  const btns = optionsEl.querySelectorAll('.opt');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if(i === q.correctIndex) b.classList.add('correct');
+    else if(i === selectedIndex) b.classList.add('wrong');
+  });
+
+  if(q.explanation){
+    explainBox.textContent = "💡 " + q.explanation;
+    explainBox.style.display = "block";
+  }
+
+  const earnedDifficulty = q.difficulty || difficulty;
+  const earnedPoints = DIFF_POINTS[earnedDifficulty] || 10;
+
+  if(selectedIndex === q.correctIndex){
+    correctCount++;
+    totalPoints += earnedPoints;
+    pointsToast.textContent = `+${earnedPoints} puan!`;
+    pointsToast.className = "points-toast gain";
+  } else {
+    pointsToast.textContent = "0 puan";
+    pointsToast.className = "points-toast zero";
+  }
+  pointsToast.style.display = "block";
+
+  updateScoreUI();
+  pushScoreToBoard();
+}
+
+function startTimer(){
+  clearInterval(countdown);
+  remaining = CFG.interval;
+  timerNum.textContent = remaining;
+  timerFg.style.strokeDasharray = CIRC;
+  timerFg.style.strokeDashoffset = 0;
+
+  countdown = setInterval(() => {
+    remaining--;
+    if(remaining < 0){ nextQuestion(true); return; }
+    timerNum.textContent = remaining;
+    const ratio = remaining / CFG.interval;
+    timerFg.style.strokeDashoffset = CIRC * (1 - ratio);
+  }, 1000);
+}
+
+const binHeaders = () => ({
+  "Content-Type": "application/json",
+  "X-Access-Key": CFG.binKey
+});
+
+async function fetchBoardData(){
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${CFG.binId}/latest`, {
+    headers: binHeaders()
+  });
+  if(!res.ok) throw new Error("Skor tablosu okunamadı ("+res.status+")");
+  const json = await res.json();
+  const record = json.record || {};
+  if(!Array.isArray(record.players)) record.players = [];
+  return record;
+}
+
+async function saveBoardData(record){
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${CFG.binId}`, {
+    method: "PUT",
+    headers: binHeaders(),
+    body: JSON.stringify(record)
+  });
+  if(!res.ok) throw new Error("Skor tablosu yazılamadı ("+res.status+")");
+}
+
+async function pushScoreToBoard(){
+  try{
+    const record = await fetchBoardData();
+    const idx = record.players.findIndex(p => p.name.toLowerCase() === playerName.toLowerCase());
+    const entry = {
+      name: playerName,
+      points: totalPoints,
+      correct: correctCount,
+      total: totalCount,
+      updatedAt: Date.now()
+    };
+    if(idx >= 0) record.players[idx] = entry;
+    else record.players.push(entry);
+    await saveBoardData(record);
+    renderBoard(record.players);
+  }catch(e){
+    console.warn("Skor tablosuna yazılamadı:", e.message);
+  }
+}
+
+async function refreshBoard(){
+  try{
+    const record = await fetchBoardData();
+    renderBoard(record.players);
+  }catch(e){
+    console.warn("Skor tablosu alınamadı:", e.message);
+  }
+}
+
+function renderBoard(players){
+  const sorted = [...players].sort((a,b) => (b.points||0) - (a.points||0)).slice(0, 20);
+  boardList.innerHTML = "";
+  if(sorted.length === 0){
+    boardEmpty.classList.remove('hidden');
+    return;
+  }
+  boardEmpty.classList.add('hidden');
+  sorted.forEach((p, i) => {
+    const li = document.createElement('li');
+    li.className = "board-item" + (p.name.toLowerCase() === playerName.toLowerCase() ? " me" : "");
+    li.innerHTML = `
+      <span class="rank ${i===0 ? 'top1' : ''}">${i+1}</span>
+      <span class="board-name">
+        <span class="n">${escapeHtml(p.name)}</span>
+        <span class="sub">${p.correct||0}/${p.total||0} doğru</span>
+      </span>
+      <span class="board-score">${p.points||0} puan</span>
+    `;
+    boardList.appendChild(li);
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
