@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kısmet Varsa?</title>
+    <style>
+        :root {
+            --bg-main: #06140d;
+            --bg-card: #0e291d;
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --text-main: #f0fdf4;
+            --text-muted: #94a3b8;
+            --border-color: #1a4731;
+            --input-bg: #091f15;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 4px;
+            color: var(--primary);
+            font-size: 22px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-main);
+            outline: none;
+        }
+        .slider-container {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px 15px 10px 15px;
+            margin-bottom: 15px;
+        }
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        .range-slider {
+            position: relative;
+            height: 6px;
+            background: #1a4731;
+            border-radius: 3px;
+            margin: 20px 10px;
+        }
+        .range-slider .track-highlight {
+            position: absolute;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+        .range-slider input[type="range"] {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            top: 0;
+            left: 0;
+            background: none;
+            pointer-events: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            pointer-events: auto;
+            -webkit-appearance: none;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            transition: transform 0.1s, background-color 0.1s;
+            border: 2px solid #fff;
+        }
+        .range-slider input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #34d399;
+        }
+        .range-slider input[type="range"]::-moz-range-thumb {
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            pointer-events: auto;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            border: 2px solid #fff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: #06140d;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #091f15;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: none;
+        }
+        .result-box h2 {
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            text-align: center;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 4px;
+            color: var(--text-muted);
+        }
+        .stat-item strong {
+            color: var(--text-main);
+        }
+        .match-score {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        .note {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 8px;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💚 Kısmet Varsa?</h1>
+    <p class="subtitle">gercek veri kullandim he 😎😎</p>
+
+    <div class="form-group">
+        <label for="userGender">Cinsiyetiniz:</label>
+        <select id="userGender" onchange="updateTargetGender()">
+            <option value="erkek">Erkek</option>
+            <option value="kadin">Kadın</option>
+            <option value="Traktor lastiği">Traktor Lastiği</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="targetGender">Aradığınız Kişinin Cinsiyeti:</label>
+        <select id="targetGender">
+            <option value="kadin" selected>Kadın</option>
+            <option value="erkek">Erkek</option>
+            <option value="Traktor lastiği">Traktor Lastiği</option>
+        </select>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider-header">
+            <div>Yaş Aralığı</div>
+            <div id="valAge">18 - 30 Yaş</div>
+        </div>
+        <div class="range-slider">
+            <div class="track-highlight" id="highlightAge"></div>
+            <input type="range" id="minAge" min="0" max="85" value="18" oninput="handleSlider('Age')">
+            <input type="range" id="maxAge" min="0" max="85" value="30" oninput="handleSlider('Age')">
+        </div>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider-header">
+            <div>Boy Aralığı (Işık yılı)</div>
+            <div id="valHeight">155 - 175 cm</div>
+        </div>
+        <div class="range-slider">
+            <div class="track-highlight" id="highlightHeight"></div>
+            <input type="range" id="minHeight" min="140" max="200" value="155" oninput="handleSlider('Height')">
+            <input type="range" id="maxHeight" min="140" max="200" value="175" oninput="handleSlider('Height')">
+        </div>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider-header">
+            <div>Kilo Aralığı (kg)</div>
+            <div id="valWeight">50 - 70 kg</div>
+        </div>
+        <div class="range-slider">
+            <div class="track-highlight" id="highlightWeight"></div>
+            <input type="range" id="minWeight" min="40" max="140" value="50" oninput="handleSlider('Weight')">
+            <input type="range" id="maxWeight" min="40" max="140" value="70" oninput="handleSlider('Weight')">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="eduLevel">Eğitim Düzeyi:</label>
+        <select id="eduLevel">
+            <option value="farketmez" selected>Farketmez</option>
+            <option value="universite">En Az Üniversite Mezunu</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="maritalStatus">Medeni Durum:</label>
+        <select id="maritalStatus">
+            <option value="farketmez" selected>Farketmez</option>
+            <option value="bekar">Sadece Hiç Evlenmemiş (Bekar)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="region">Bölge:</label>
+        <select id="region">
+            <option value="turkiye" selected>Türkiye Geneli</option>
+            <option value="buyuksehir">Büyükşehir (İstanbul / Ankara / İzmir)</option>
+            <option value="guneydogu">Güneydoğu Anadolu (Adıyaman, Gaziantep, Kilis vb.)</option>
+            <option value="dusuk">Evlenme Oranı Düşük İller (Tunceli, Gümüşhane, Bayburt vb.)</option>
+        </select>
+    </div>
+
+    <button onclick="calculateMatch()">Kısmetimi Hesapla🤑🤑</button>
+
+    <div class="result-box" id="resultBox">
+        <h2>Analiz Sonuçları</h2>
+        <div class="match-score" id="matchScore">%0</div>
+        <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Tahmini Uyumluluk ve Şans Oranı</p>
+
+        <div class="stat-item">
+            <div>Hedef Cinsiyet Nüfusu (TÜİK 2024):</div>
+            <strong id="targetPopulation">-</strong>
+        </div>
+        <div class="stat-item">
+            <div>Kriterlerinize Uyan Tahmini Kişi:</div>
+            <strong id="matchingCount">-</strong>
+        </div>
+        <div class="stat-item">
+            <div>Kriter Değerlendirmesi:</div>
+            <strong id="compatibilityStatus">-</strong>
+        </div>
+        <p class="note">* TÜİK 2024ten aldım</p>
+    </div>
+</div>
+
+<script>
+// ---- TÜİK 2024 ADNKS (31.12.2024) gerçek nüfus verileri ----
+const POPULATION = {
+    erkek: 42853110,
+    kadin: 42811834
+};
+
+// Yaş yapısı oranları (TÜİK 2024): 0-14 -> %20,9 | 15-64 -> %68,4 | 65+ -> %10,6
+// Ortanca yaş: erkek 33,7 / kadın 35,2 (kadın nüfus biraz daha yaşlı - kadınlar daha uzun yaşıyor)
+// Bu oranlara ve ortanca yaşlara oturan, cinsiyete özel yumuşatılmış bir yaş dağılımı kuruyoruz.
+function ageWeight(age, gender) {
+    // Ortanca yaşı ve TÜİK'in geniş yaş bandı oranlarını temel alan normal-benzeri (log-normal'a yakın) bir eğri.
+    // Kadınlarda dağılım biraz daha sağa (yaşlıya) kaymış, erkeklerde 20'li-30'lu yaşlarda hafif daha kalabalık.
+    const median = gender === 'kadin' ? 35.2 : 33.7;
+    const spread = gender === 'kadin' ? 19.5 : 18.5;
+    // Genç nüfusta (0-14) TÜİK'in gösterdiği payı (~%20,9) tutturmak için hafif taban ekliyoruz.
+    const childBoost = age <= 14 ? 0.35 : 0;
+    const core = Math.exp(-Math.pow(age - median, 2) / (2 * spread * spread));
+    return core + childBoost;
+}
+
+function buildAgeDistribution(gender) {
+    const weights = [];
+    let total = 0;
+    for (let a = 0; a <= 100; a++) {
+        const w = ageWeight(a, gender);
+        weights.push(w);
+        total += w;
+    }
+    return { weights, total };
+}
+
+function normalCDF(x, mean, stdDev) {
+    return 0.5 * (1 + erf((x - mean) / (stdDev * Math.sqrt(2))));
+}
+
+function erf(x) {
+    const sign = (x >= 0) ? 1 : -1;
+    x = Math.abs(x);
+    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return sign * y;
+}
+
+// ---- TÜİK İstatistiklerle Kadın 2024: 25 yaş üstü yükseköğretim mezuniyet oranı ----
+const UNIVERSITY_GRAD_RATIO = {
+    kadin: 0.209,
+    erkek: 0.251
+};
+
+// ---- TÜİK Evlenme ve Boşanma İstatistikleri 2024: ortalama ilk evlenme yaşı ----
+// Bu değeri, "o yaşa kadar hiç evlenmemiş olma" olasılığını yaklaşık modellemek için
+// bir lojistik eğrinin orta noktası olarak kullanıyoruz (kesin bir TÜİK dağılımı değil, yaklaşımdır).
+const FIRST_MARRIAGE_AGE = {
+    kadin: 25.8,
+    erkek: 28.3
+};
+
+function neverMarriedProb(age, gender) {
+    const midpoint = FIRST_MARRIAGE_AGE[gender];
+    const steepness = 0.22;
+    // Lojistik azalan eğri: küçük yaşlarda ~1'e yakın, ortalama evlenme yaşı civarında ~0,5, sonrasında düşük.
+    return 1 / (1 + Math.exp(-steepness * (midpoint - age)));
+}
+
+// ---- TÜİK Evlenme ve Boşanma İstatistikleri 2024: kaba evlenme hızı (binde) ----
+// Türkiye geneli: 6,65 · en yüksek Adıyaman: 7,76 · en düşük Tunceli: 4,01
+// Bölgesel evlilik yoğunluğunu kaba bir katsayı olarak final orana yansıtıyoruz (hafif, sınırlı bir etki).
+const NATIONAL_MARRIAGE_RATE = 6.65;
+const REGION_MARRIAGE_RATE = {
+    turkiye: 6.65,
+    buyuksehir: 5.9,   // büyükşehirlerde evlenme hızı genelde ortalamanın biraz altında
+    guneydogu: 7.6,    // Adıyaman, Gaziantep, Kilis gibi illerin ortalamasına yakın
+    dusuk: 4.2         // Tunceli, Gümüşhane, Bayburt gibi illerin ortalamasına yakın
+};
+
+function regionModifier(regionKey) {
+    const rate = REGION_MARRIAGE_RATE[regionKey] || NATIONAL_MARRIAGE_RATE;
+    const ratio = rate / NATIONAL_MARRIAGE_RATE;
+    // Etkiyi sınırlıyoruz ki bölge seçimi tek başına sonucu abartılı değiştirmesin.
+    return Math.max(0.85, Math.min(1.15, ratio));
+}
+
+function updateTargetGender() {
+    const userGender = document.getElementById('userGender').value;
+    const targetGender = document.getElementById('targetGender');
+    targetGender.value = (userGender === 'erkek') ? 'kadin' : 'erkek';
+}
+
+function handleSlider(type) {
+    const minEl = document.getElementById('min' + type);
+    const maxEl = document.getElementById('max' + type);
+    const highlight = document.getElementById('highlight' + type);
+    const valLabel = document.getElementById('val' + type);
+
+    let minVal = parseInt(minEl.value);
+    let maxVal = parseInt(maxEl.value);
+
+    if (minVal > maxVal) {
+        [minVal, maxVal] = [maxVal, minVal];
+    }
+
+    const minLimit = parseInt(minEl.min);
+    const maxLimit = parseInt(minEl.max);
+
+    const percentMin = ((minVal - minLimit) / (maxLimit - minLimit)) * 100;
+    const percentMax = ((maxVal - minLimit) / (maxLimit - minLimit)) * 100;
+
+    highlight.style.left = percentMin + '%';
+    highlight.style.width = (percentMax - percentMin) + '%';
+
+    const unit = type === 'Age' ? ' Yaş' : (type === 'Height' ? ' cm' : ' kg');
+    valLabel.innerText = minVal + ' - ' + maxVal + unit;
+}
+
+['Age', 'Height', 'Weight'].forEach(type => handleSlider(type));
+
+function calculateMatch() {
+    const targetGender = document.getElementById('targetGender').value;
+    const totalTargetPop = POPULATION[targetGender];
+
+    let minAge = parseInt(document.getElementById('minAge').value);
+    let maxAge = parseInt(document.getElementById('maxAge').value);
+    if (minAge > maxAge) [minAge, maxAge] = [maxAge, minAge];
+
+    let minHeight = parseInt(document.getElementById('minHeight').value);
+    let maxHeight = parseInt(document.getElementById('maxHeight').value);
+    if (minHeight > maxHeight) [minHeight, maxHeight] = [maxHeight, minHeight];
+
+    let minWeight = parseInt(document.getElementById('minWeight').value);
+    let maxWeight = parseInt(document.getElementById('maxWeight').value);
+    if (minWeight > maxWeight) [minWeight, maxWeight] = [maxWeight, minWeight];
+
+    // Yaş olasılığı: TÜİK'e dayalı, cinsiyete özel yaş dağılımından
+    const { weights, total } = buildAgeDistribution(targetGender);
+    let ageSum = 0;
+    for (let a = minAge; a <= Math.min(maxAge, 100); a++) {
+        ageSum += weights[a];
+    }
+    const ageProb = total > 0 ? (ageSum / total) : 0;
+
+    // Boy dağılımı: Türkiye sağlık taramalarındaki ortalamalara yakın değerler
+    const meanH = targetGender === 'kadin' ? 162 : 174;
+    const stdH = targetGender === 'kadin' ? 6.5 : 7;
+    let heightProb = normalCDF(maxHeight, meanH, stdH) - normalCDF(minHeight, meanH, stdH);
+    heightProb = Math.max(0, Math.min(1, heightProb));
+
+    // Kilo dağılımı: yetişkin ortalamalarına yakın değerler
+    const meanW = targetGender === 'kadin' ? 70 : 82;
+    const stdW = targetGender === 'kadin' ? 13 : 14;
+    let weightProb = normalCDF(maxWeight, meanW, stdW) - normalCDF(minWeight, meanW, stdW);
+    weightProb = Math.max(0, Math.min(1, weightProb));
+
+    // Eğitim düzeyi olasılığı: TÜİK İstatistiklerle Kadın 2024 verisine göre
+    const eduLevel = document.getElementById('eduLevel').value;
+    let eduProb = 1;
+    if (eduLevel === 'universite') {
+        eduProb = UNIVERSITY_GRAD_RATIO[targetGender];
+    }
+
+    // Medeni durum olasılığı: ortalama ilk evlenme yaşına dayalı yaklaşık model
+    // (yaş aralığının ortası üzerinden hesaplanır)
+    const maritalStatus = document.getElementById('maritalStatus').value;
+    let maritalProb = 1;
+    if (maritalStatus === 'bekar') {
+        const midAge = (minAge + maxAge) / 2;
+        maritalProb = neverMarriedProb(midAge, targetGender);
+    }
+
+    // Bölgesel evlenme yoğunluğu katsayısı (kaba evlenme hızına dayalı, sınırlı etki)
+    const region = document.getElementById('region').value;
+    const regionMod = regionModifier(region);
+
+    let combinedProb = ageProb * heightProb * weightProb * eduProb * maritalProb * regionMod;
+    combinedProb = Math.max(0, Math.min(1, combinedProb));
+    let finalPercentage = Math.round(combinedProb * 100 * 10) / 10;
+    if (finalPercentage < 0.05 || combinedProb === 0) {
+        finalPercentage = 0;
+    }
+
+    const matchingCount = Math.round(totalTargetPop * combinedProb);
+
+    let statusText = "Gerçekçi ve Makul Kriterler | helal ";
+    if (finalPercentage === 0) {
+        statusText = "Kriterlerinize Uyan Kimse Bulunamadı🥲";
+    } else if (finalPercentage < 1) {
+        statusText = "Çok Nadir / İstisnai Aralık | Sıkıntı reis ya";
+    } else if (finalPercentage < 10) {
+        statusText = "Seçici ve Dar Kriterler | belki benim?";
+    }
+
+    document.getElementById('resultBox').style.display = 'block';
+    document.getElementById('matchScore').innerText = '%' + finalPercentage;
+    document.getElementById('targetPopulation').innerText = totalTargetPop.toLocaleString('tr-TR') + ' kişi';
+    document.getElementById('matchingCount').innerText = matchingCount.toLocaleString('tr-TR') + ' kişi';
+    document.getElementById('compatibilityStatus').innerText = statusText;
+}
+</script>
+
+</body>
+</html>
