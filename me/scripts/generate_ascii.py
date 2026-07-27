@@ -68,7 +68,7 @@ def generate_html():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>burak@dev: ~</title>
+    <title>emirattaa@dev: ~</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -274,23 +274,22 @@ def generate_html():
             
             <div class="panel-body">
                 <div class="cmd-line">
-                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">whoami</span></div>
-                    <div class="output">Burak</div>
+                    <div><span class="prompt">emirattaa@admin</span>:<span class="path">~</span>$ <span class="cmd">whoami</span></div>
+                    <div class="output">Emir</div>
                 </div>
 
                 <div class="cmd-line">
                     <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">cat education.txt</span></div>
                     <div class="output">
                         - 8. Sınıf Öğrencisi<br>
-                        - <span class="output-highlight">TÜBİTAK Fen Lisesi</span> (Yedek Listede Bekliyor)
+                        <span class="output-highlight"></span>
                     </div>
                 </div>
 
                 <div class="cmd-line">
                     <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">systemctl status dev-environment</span></div>
                     <div class="output">
-                        ● Cihaz: <span class="output-highlight">Samsung Galaxy S24 Ultra</span> (Mobil Geliştirme)<br>
-                        ● Diller:<br>
+                       ● Diller:<br>
                         <div class="tag-group">
                             <span class="tag">JavaScript</span>
                             <span class="tag">Python</span>
@@ -303,7 +302,6 @@ def generate_html():
                 <div class="cmd-line">
                     <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">./fetch-projects.sh</span></div>
                     <div class="output">
-                        > Discord Bot Altyapıları (Aktif)<br>
                         > Sunucular: GitHub & Render<br>
                         > Ekip: <span class="output-highlight">Rizza</span>, <span class="output-highlight">Emoc</span> & Burak
                     </div>
@@ -311,23 +309,20 @@ def generate_html():
 
                 <div class="cmd-line">
                     <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">grep "hobbies" user.config</span></div>
-                    <div class="output">
-                        > "PS5 Platinum Kupa Avcılığı"<br>
-                        > "Mobil Geliştirme"
-                    </div>
+                    <div class="output">                    </div>
                 </div>
 
                 <div class="links-menu">
-                    <a href="https://github.com" target="_blank" class="nav-link">
+                    <a href="https://github.com/emirattaa" target="_blank" class="nav-link">
                         <i class="fa-brands fa-github"></i> <span>GitHub Profili / Bot Repoları</span>
                     </a>
-                    <a href="https://instagram.com" target="_blank" class="nav-link">
+                    <a href="https://instagram.com/emirattaa" target="_blank" class="nav-link">
                         <i class="fa-brands fa-instagram"></i> <span>Instagram Adresim</span>
                     </a>
-                    <a href="https://giphy.com" target="_blank" class="nav-link">
+                    <a href="https://giphy.com/emirattaa" target="_blank" class="nav-link">
                         <i class="fa-solid fa-film"></i> <span>GIPHY Sticker Koleksiyonu</span>
                     </a>
-                    <a href="mailto:mailin@gmail.com" class="nav-link">
+                    <a href="mailto:dincemirata@gmail.com" class="nav-link">
                         <i class="fa-solid fa-envelope"></i> <span>Gmail İle İletişim</span>
                     </a>
                 </div>
