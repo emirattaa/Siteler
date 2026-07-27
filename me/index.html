@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>burak@dev: ~</title>
-    <!-- Fontlar -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome (İkonlar için) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -46,7 +44,6 @@
             color: var(--bg-main);
         }
 
-        /* Layout Grid */
         .dashboard {
             width: 100%;
             max-width: 1200px;
@@ -55,7 +52,6 @@
             gap: 24px;
         }
 
-        /* Paneller */
         .panel {
             background-color: var(--bg-surface);
             border: 1px solid var(--border-color);
@@ -97,7 +93,6 @@
             overflow-y: auto;
         }
 
-        /* Terminal Stilleri (Sol Panel) */
         .cmd-line {
             margin-bottom: 16px;
             font-size: 0.9rem;
@@ -113,7 +108,6 @@
         }
         .output-highlight { color: var(--accent-blue); }
         
-        /* Yetenek Etiketleri */
         .tag-group {
             display: flex;
             flex-wrap: wrap;
@@ -129,7 +123,6 @@
             color: var(--text-main);
         }
 
-        /* ASCII Art Oynatıcı (Sağ Panel) */
         .ascii-wrapper {
             display: flex;
             flex-direction: column;
@@ -145,10 +138,10 @@
 
         #ascii-display {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 6.5px; /* Detay seviyesi için ufak font */
-            line-height: 6.5px;
+            font-size: 6px;
+            line-height: 6px;
             white-space: pre;
-            color: var(--accent-green); /* Matrix yeşili görünümü */
+            color: var(--accent-green);
             text-align: center;
         }
 
@@ -167,7 +160,6 @@
         #anim-status { color: var(--accent-yellow); }
         .frame-counter { font-variant-numeric: tabular-nums; }
 
-        /* Linkler Menüsü */
         .links-menu {
             display: flex;
             flex-direction: column;
@@ -198,10 +190,9 @@
 
         .nav-link i { font-size: 1.1rem; }
 
-        /* Responsive */
         @media (max-width: 900px) {
             .dashboard { grid-template-columns: 1fr; }
-            #ascii-display { font-size: 5px; line-height: 5px; }
+            #ascii-display { font-size: 4.5px; line-height: 4.5px; }
             body { padding: 1rem; }
         }
     </style>
@@ -286,27 +277,24 @@
         <!-- SAĞ PANEL: ASCII Animasyon -->
         <div class="panel">
             <div class="panel-header">
-                <span>./video/Kedi.gif - ASCII Player (Multi-Frame)</span>
+                <span>./gif/kedi.gif - Multi-Frame ASCII Player</span>
                 <span class="frame-counter" id="frame-info">Frame: 0/0</span>
             </div>
             
             <div class="panel-body" style="display: flex; flex-direction: column;">
                 <div class="ascii-wrapper">
-                    <!-- GIF Kareleri Buraya Çizilecek -->
                     <pre id="ascii-display">Yükleniyor...</pre>
                 </div>
                 
                 <div class="status-bar">
                     <span id="anim-status">AĞ BEKLENİYOR...</span>
-                    <span>Çözünürlük: Yüksek (100x Char)</span>
+                    <span>Mod: Full-Frame Render</span>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- GIF Parse kütüphanesi (Vercel/GitHub Pages üzerinde çalışır) -->
-    <!-- GIF'in tüm karelerini (framelerini) ayıklamamızı sağlar -->
     <script src="https://unpkg.com/gifuct-js/dist/gifuct-js.min.js"></script>
     
     <script>
@@ -315,56 +303,53 @@
             const statusEl = document.getElementById('anim-status');
             const frameInfo = document.getElementById('frame-info');
             
-            // Parlaklıktan karakterlere geçiş (Koyu arka planda: boşluk=siyah, @=beyaz)
-            // Detaylı ASCII karakter seti:
-            const DENSITY = " .'`^\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+            const DENSITY = " .'`^\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
             
             let frames = [];
             let currentFrameIndex = 0;
-            let asciiFrames = []; // Önceden hesaplanmış ASCII metinleri
+            let asciiFrames = [];
 
             async function init() {
                 try {
-                    statusEl.textContent = "DOSYA ÇEKİLİYOR: ./video/Kedi.gif";
+                    statusEl.textContent = "DOSYA ÇEKİLİYOR: ./gif/kedi.gif";
                     statusEl.style.color = "var(--accent-yellow)";
                     
+                    // Vercel kök dizini 'me' olduğu için yol doğrudan ./gif/kedi.gif olmalıdır
                     const response = await fetch('./gif/kedi.gif');
                     
                     if (!response.ok) {
                         throw new Error(`HTTP Error: ${response.status}`);
                     }
                     
-                    statusEl.textContent = "VERİ OKUNUYOR (ARRAY BUFFER)...";
+                    statusEl.textContent = "BUFFER OKUNUYOR...";
                     const buffer = await response.arrayBuffer();
                     
-                    statusEl.textContent = "GIF PARÇALANIYOR (FRAMES)...";
-                    // window.parseGIF ve window.decompressFrames 'gifuct-js' kütüphanesinden gelir
+                    statusEl.textContent = "GIF FRAMELERİ ÇÖZÜLÜYOR...";
                     const parsedGif = parseGIF(buffer);
                     frames = decompressFrames(parsedGif, true);
                     
                     if (frames.length === 0) throw new Error("Frame bulunamadı.");
                     
-                    statusEl.textContent = "ASCII RENDER İŞLEMİ (HER FRAME İÇİN)...";
+                    statusEl.textContent = "TÜM FRAMELER ASCII'YE ÇEVRİLİYOR...";
                     await renderAllFramesToAscii();
                     
-                    statusEl.textContent = "AKTİF (OYNATILIYOR)";
+                    statusEl.textContent = "OYNATILIYOR (LIVE)";
                     statusEl.style.color = "var(--accent-green)";
                     
-                    // Animasyonu başlat
                     playAnimation();
                     
                 } catch (err) {
                     console.error(err);
-                    statusEl.textContent = "HATA: DOSYA BULUNAMADI VEYA OKUNAMADI";
+                    statusEl.textContent = "HATA: DOSYA OKUNAMADI";
                     statusEl.style.color = "var(--accent-red)";
                     asciiDisplay.textContent = 
-` /\_/\
+` /\\_/\\
 ( o.o )
  > ^ <
 
-[Sistem Hatası]: ./video/Kedi.gif bulunamadı.
-[Çözüm]: Projeyi Vercel/GitHub'a yüklerken kök dizinde 
-'video' klasörü oluşturup içine 'Kedi.gif' dosyasını koyduğundan emin ol.`;
+[Sistem Hatası]: ./gif/kedi.gif bulunamadı.
+[Çözüm]: 'me' klasörünün içinde 'gif' adında bir klasör 
+olduğundan ve içinde 'kedi.gif' yazdığından emin ol.`;
                 }
             }
 
@@ -372,16 +357,13 @@
                 const width = frames[0].dims.width;
                 const height = frames[0].dims.height;
                 
-                // GIF karelerinin üst üste binme (disposal) mantığını işlemek için Canvas
                 const tempCanvas = document.createElement('canvas');
                 tempCanvas.width = width;
                 tempCanvas.height = height;
                 const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
                 
-                // ASCII için küçültülecek Canvas
-                const asciiWidth = 90; // Yüksek çözünürlük (Karakter genişliği)
+                const asciiWidth = 85; 
                 const ratio = height / width;
-                // Terminal fontları genelde uzun olduğu için 0.45 katsayısı ile boyu düzeltiyoruz
                 const asciiHeight = Math.floor(asciiWidth * ratio * 0.45); 
                 
                 const scaleCanvas = document.createElement('canvas');
@@ -392,7 +374,6 @@
                 for (let i = 0; i < frames.length; i++) {
                     const frame = frames[i];
                     
-                    // Çerçeve (Patch) pikselleri
                     const patchCanvas = document.createElement('canvas');
                     patchCanvas.width = frame.dims.width;
                     patchCanvas.height = frame.dims.height;
@@ -405,7 +386,6 @@
                     );
                     patchCtx.putImageData(patchData, 0, 0);
                     
-                    // Eğer disposal type 2 ise önceki framei temizle
                     if (i > 0 && frames[i-1].disposalType === 2) {
                         tempCtx.clearRect(
                             frames[i-1].dims.left, 
@@ -415,10 +395,8 @@
                         );
                     }
                     
-                    // Yeni framei üstüne çiz
                     tempCtx.drawImage(patchCanvas, frame.dims.left, frame.dims.top);
                     
-                    // Boyutu küçült (ASCII için)
                     scaleCtx.clearRect(0, 0, asciiWidth, asciiHeight);
                     scaleCtx.drawImage(tempCanvas, 0, 0, asciiWidth, asciiHeight);
                     
@@ -429,25 +407,21 @@
                         const r = imageData[p];
                         const g = imageData[p+1];
                         const b = imageData[p+2];
-                        const a = imageData[p+3]; // Alpha (Transparanlık)
+                        const a = imageData[p+3];
                         
-                        if (a < 100) { // Transparan veya çok saydam kısımlar
+                        if (a < 100) {
                             frameAscii += " ";
                         } else {
-                            // Grayscale ortalama
                             const avg = (r + g + b) / 3;
-                            // Parlaklığı DENSITY dizisinin uzunluğuna oranla
                             const charIndex = Math.floor((avg / 255) * (DENSITY.length - 1));
                             frameAscii += DENSITY[charIndex];
                         }
                         
-                        // Satır sonu kontrolü
                         if (((p / 4) + 1) % asciiWidth === 0) {
                             frameAscii += "\n";
                         }
                     }
                     
-                    // Frame'i ve bekleme süresini kaydet (Eğer delay 0 ise varsayılan 100ms yap)
                     let frameDelay = frame.delay;
                     if (!frameDelay || frameDelay < 20) frameDelay = 100;
                     
@@ -467,11 +441,9 @@
                 
                 currentFrameIndex = (currentFrameIndex + 1) % asciiFrames.length;
                 
-                // Döngüyü frame süresine göre devam ettir
                 setTimeout(playAnimation, currentFrame.delay);
             }
 
-            // Script'i başlat
             init();
         });
     </script>
