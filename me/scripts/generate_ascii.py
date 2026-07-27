@@ -10,11 +10,11 @@ def generate_html():
         return
 
     im = Image.open(gif_path)
-    ascii_density = r" .'`^\\,:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
-                                              
+    # Raw string kullanarak kaçış karakteri sorununu önlüyoruz
+    ascii_density = r" .'`^\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
     
     frames_data = []
-    width = 75  # ASCII karakter genişliği
+    width = 70  # Performans ve boyut dengesi için genişlik
     
     try:
         while True:
@@ -22,22 +22,38 @@ def generate_html():
             ratio = h / w
             new_h = int(width * ratio * 0.45) # Font oranını eşitlemek için
             
-            frame_img = im.copy().resize((width, new_h)).convert("L")
-            pixels = frame_img.getdata()
+            # GIF karesini RGB moduna çevirip boyutlandırıyoruz
+            frame_rgb = im.copy().convert("RGB").resize((width, new_h))
             
-            ascii_str = ""
-            for i, pixel in enumerate(pixels):
-                char_idx = int(pixel / 255 * (len(ascii_density) - 1))
-                ascii_str += ascii_density[char_idx]
-                if (i + 1) % width == 0:
-                    ascii_str += "\n"
+            frame_html = ""
+            for y in range(new_h):
+                for x in range(width):
+                    r, g, b = frame_rgb.getpixel((x, y))
+                    
+                    # Karakter seçimi için parlaklık hesabı (Grayscale formülü)
+                    brightness = int(0.299 * r + 0.587 * g + 0.114 * b)
+                    char_idx = int(brightness / 255 * (len(ascii_density) - 1))
+                    char = ascii_density[char_idx]
+                    
+                    # HTML özel karakter güvenlik koruması
+                    if char == "<": char_esc = "&lt;"
+                    elif char == ">": char_esc = "&gt;"
+                    elif char == "&": char_esc = "&amp;"
+                    else: char_esc = char
+                    
+                    if char == " ":
+                        frame_html += " "
+                    else:
+                        # Orijinal piksel rengiyle span sarmalama
+                        frame_html += f'<span style="color:rgb({r},{g},{b})">{char_esc}</span>'
+                frame_html += "\n"
                     
             duration = im.info.get('duration', 100)
             if duration < 20: 
                 duration = 100
                 
             frames_data.append({
-                "text": ascii_str,
+                "text": frame_html,
                 "delay": duration
             })
             
@@ -45,10 +61,8 @@ def generate_html():
     except EOFError:
         pass
 
-    # JavaScript dizisi olarak frame verilerini hazırlıyoruz
     frames_json = str(frames_data)
 
-    # HTML Şablonu (Tüm Bilgilerin ve Gömülü Frame Verilerin)
     html_content = f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -188,7 +202,6 @@ def generate_html():
             font-size: 5.5px;
             line-height: 5.5px;
             white-space: pre;
-            color: var(--accent-green);
             text-align: center;
         }}
 
@@ -324,7 +337,7 @@ def generate_html():
         <!-- SAĞ PANEL -->
         <div class="panel">
             <div class="panel-header">
-                <span>./gif/kedi.gif [Embedded Static Frames]</span>
+                <span>./gif/kedi.gif [RGB Color ASCII]</span>
                 <span class="frame-counter" id="frame-info">Frame: --/--</span>
             </div>
             
@@ -334,8 +347,8 @@ def generate_html():
                 </div>
                 
                 <div class="status-bar">
-                    <span id="anim-status">HAZIR (INSTANT LOAD)</span>
-                    <span>Mod: Pre-compiled</span>
+                    <span id="anim-status">HAZIR (RENKLİ)</span>
+                    <span>Mod: RGB Truecolor</span>
                 </div>
             </div>
         </div>
@@ -343,7 +356,6 @@ def generate_html():
     </div>
 
     <script>
-        // Python tarafından otomatik gömülen pre-rendered frame verileri
         const asciiFrames = {frames_json};
 
         document.addEventListener('DOMContentLoaded', () => {{
@@ -355,7 +367,8 @@ def generate_html():
                 if (asciiFrames.length === 0) return;
                 
                 const currentFrame = asciiFrames[currentFrameIndex];
-                asciiDisplay.textContent = currentFrame.text;
+                // innerHTML kullanarak renklendirilmiş span etiketlerini ekrana basıyoruz
+                asciiDisplay.innerHTML = currentFrame.text;
                 frameInfo.textContent = `Frame: ${{currentFrameIndex + 1}}/${{asciiFrames.length}}`;
                 
                 currentFrameIndex = (currentFrameIndex + 1) % asciiFrames.length;
@@ -376,4 +389,3 @@ def generate_html():
 
 if __name__ == "__main__":
     generate_html()
-  
