@@ -269,17 +269,17 @@ def generate_html():
                     <div class="ctrl ctrl-min"></div>
                     <div class="ctrl ctrl-max"></div>
                 </div>
-                <span>burak@s24-ultra:~</span>
+                <span>console ahh?</span>
             </div>
             
             <div class="panel-body">
                 <div class="cmd-line">
                     <div><span class="prompt">emirattaa@admin</span>:<span class="path">~</span>$ <span class="cmd">whoami</span></div>
-                    <div class="output">Emir</div>
+                    <div class="output">Emir Ata</div>
                 </div>
 
                 <div class="cmd-line">
-                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">cat education.txt</span></div>
+                    <div><span class="prompt">emirattaa@admin</span>:<span class="path">~</span>$ <span class="cmd">cat education.txt</span></div>
                     <div class="output">
                         - 8. Sınıf Öğrencisi<br>
                         <span class="output-highlight"></span>
@@ -287,7 +287,7 @@ def generate_html():
                 </div>
 
                 <div class="cmd-line">
-                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">systemctl status dev-environment</span></div>
+                    <div><span class="prompt">emirattaa@admin</span>:<span class="path">~</span>$ <span class="cmd">systemctl status dev-environment</span></div>
                     <div class="output">
                        ● Diller:<br>
                         <div class="tag-group">
@@ -300,16 +300,15 @@ def generate_html():
                 </div>
 
                 <div class="cmd-line">
-                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">./fetch-projects.sh</span></div>
+                    <div><span class="prompt">emirattaa@admin</span>:<span class="path">~</span>$ <span class="cmd">./fetch-projects.sh</span></div>
                     <div class="output">
-                        > Sunucular: GitHub & Render<br>
-                        > Ekip: <span class="output-highlight">Rizza</span>, <span class="output-highlight">Emoc</span> & Burak
+                        > Sunucular: GitHub Vercel Render Supabase.<br>
                     </div>
                 </div>
 
                 <div class="cmd-line">
-                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">grep "hobbies" user.config</span></div>
-                    <div class="output">                    </div>
+                    <div><span class="prompt">emirattaa@admin</span>:<span class="path">~</span>$ <span class="cmd">grep "hobbies" user.config</span></div>
+                    <div class="output">Coding</div>
                 </div>
 
                 <div class="links-menu">
@@ -332,8 +331,8 @@ def generate_html():
         <!-- SAĞ PANEL -->
         <div class="panel">
             <div class="panel-header">
-                <span>./gif/kedi.gif [RGB Color ASCII]</span>
-                <span class="frame-counter" id="frame-info">Frame: --/--</span>
+                <span></span>
+                <span class="frame-counter" id="frame-info"></span>
             </div>
             
             <div class="panel-body" style="display: flex; flex-direction: column;">
@@ -342,8 +341,8 @@ def generate_html():
                 </div>
                 
                 <div class="status-bar">
-                    <span id="anim-status">HAZIR (RENKLİ)</span>
-                    <span>Mod: RGB Truecolor</span>
+                    <span id="anim-status"></span>
+                    <span></span>
                 </div>
             </div>
         </div>
@@ -364,7 +363,7 @@ def generate_html():
                 const currentFrame = asciiFrames[currentFrameIndex];
                 // innerHTML kullanarak renklendirilmiş span etiketlerini ekrana basıyoruz
                 asciiDisplay.innerHTML = currentFrame.text;
-                frameInfo.textContent = `Frame: ${{currentFrameIndex + 1}}/${{asciiFrames.length}}`;
+                frameInfo.textContent = ``;
                 
                 currentFrameIndex = (currentFrameIndex + 1) % asciiFrames.length;
                 
