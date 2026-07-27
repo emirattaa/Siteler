@@ -10,7 +10,8 @@ def generate_html():
         return
 
     im = Image.open(gif_path)
-    ascii_density = " .'`^\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+    ascii_density = r" .'`^\\,:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+                                              
     
     frames_data = []
     width = 75  # ASCII karakter genişliği
