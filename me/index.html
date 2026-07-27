@@ -1,22 +1,26 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Burak | Developer</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>burak@dev: ~</title>
+    <!-- Fontlar -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome (İkonlar için) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
-
         :root {
-            --bg: #09090b;
-            --surface: #18181b;
-            --surface-hover: #27272a;
-            --text-primary: #f4f4f5;
-            --text-secondary: #a1a1aa;
-            --accent: #10b981;
-            --border: #3f3f46;
+            --bg-main: #0d1117;
+            --bg-surface: #161b22;
+            --bg-highlight: #21262d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-yellow: #d29922;
+            --border-color: #30363d;
         }
 
         * {
@@ -26,430 +30,449 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
             line-height: 1.6;
-            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
         }
 
         ::selection {
-            background-color: var(--accent);
-            color: var(--bg);
+            background-color: var(--accent-blue);
+            color: var(--bg-main);
         }
 
-        /* Ana Konteyner */
-        .container {
+        /* Layout Grid */
+        .dashboard {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Sol Taraf: Profil ve Hakkımda */
-        .profile-section {
-            display: flex;
-            flex-direction: column;
             gap: 24px;
         }
 
-        .header {
+        /* Paneller */
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
+        }
+
+        .panel-header {
+            background-color: var(--bg-highlight);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .window-controls {
+            display: flex;
             gap: 8px;
         }
 
-        .header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -0.05em;
-            line-height: 1;
+        .ctrl {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .ctrl-close { background-color: var(--accent-red); }
+        .ctrl-min { background-color: var(--accent-yellow); }
+        .ctrl-max { background-color: var(--accent-green); }
+
+        .panel-body {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
         }
 
-        .header h2 {
-            font-family: 'Fira Code', monospace;
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--accent);
+        /* Terminal Stilleri (Sol Panel) */
+        .cmd-line {
+            margin-bottom: 16px;
+            font-size: 0.9rem;
         }
-
-        .description {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            text-align: justify;
+        .prompt { color: var(--accent-green); font-weight: 500; }
+        .path { color: var(--accent-blue); font-weight: 500; }
+        .cmd { color: var(--text-main); }
+        .output { 
+            color: var(--text-muted); 
+            margin-top: 4px;
+            padding-left: 12px;
+            border-left: 2px solid var(--border-color);
         }
+        .output-highlight { color: var(--accent-blue); }
         
-        .highlight {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        /* Teknoloji Stack */
-        .tech-stack {
+        /* Yetenek Etiketleri */
+        .tag-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .tag {
+            background-color: var(--bg-highlight);
+            border: 1px solid var(--border-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-main);
         }
 
-        .tech-item {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-            cursor: default;
-        }
-
-        .tech-item:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background-color: rgba(16, 185, 129, 0.05);
-        }
-
-        /* Sağ Taraf: ASCII Art ve Linkler */
-        .visual-section {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        /* ASCII Art Konteyneri */
-        .ascii-container {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            overflow: hidden;
+        /* ASCII Art Oynatıcı (Sağ Panel) */
+        .ascii-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: #000;
+            border-radius: 6px;
+            padding: 16px;
             position: relative;
-            min-height: 250px;
+            overflow: hidden;
         }
 
-        .ascii-header {
+        #ascii-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 6.5px; /* Detay seviyesi için ufak font */
+            line-height: 6.5px;
+            white-space: pre;
+            color: var(--accent-green); /* Matrix yeşili görünümü */
+            text-align: center;
+        }
+
+        .status-bar {
+            margin-top: auto;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-family: 'Fira Code', monospace;
             font-size: 0.75rem;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-        }
-        
-        .ascii-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent);
-            animation: pulse 2s infinite;
+            color: var(--text-muted);
+            border-top: 1px dashed var(--border-color);
+            padding-top: 12px;
+            margin-top: 16px;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
+        #anim-status { color: var(--accent-yellow); }
+        .frame-counter { font-variant-numeric: tabular-nums; }
 
-        /* GIF'i ASCII'ye çevirmek için Canvas ve Pre */
-        #ascii-art {
-            font-family: 'Fira Code', monospace;
-            font-size: 6px; /* Yoğunluk için küçük font */
-            line-height: 6px;
-            white-space: pre;
-            color: var(--text-primary);
-            text-align: center;
-            user-select: none;
-            overflow: hidden;
-        }
-        
-        /* Gizli öğeler */
-        #hidden-canvas, #gif-image {
-            display: none;
-        }
-
-        /* Linkler (Minimalist) */
-        .links {
+        /* Linkler Menüsü */
+        .links-menu {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
+            margin-top: 24px;
         }
 
-        .link-item {
+        .nav-link {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
+            gap: 12px;
+            padding: 10px 16px;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
             text-decoration: none;
-            transition: all 0.2s ease;
-            font-family: 'Fira Code', monospace;
+            border-radius: 6px;
+            transition: all 0.2s;
             font-size: 0.9rem;
         }
-        
-        .link-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+
+        .nav-link:hover {
+            background-color: var(--bg-highlight);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            transform: translateX(4px);
         }
 
-        .link-icon {
-            color: var(--text-secondary);
-            transition: color 0.2s ease;
-        }
+        .nav-link i { font-size: 1.1rem; }
 
-        .link-arrow {
-            color: var(--text-secondary);
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.2s ease;
-        }
-
-        .link-item:hover {
-            background-color: var(--surface-hover);
-            border-color: var(--text-secondary);
-        }
-
-        .link-item:hover .link-icon {
-            color: var(--text-primary);
-        }
-
-        .link-item:hover .link-arrow {
-            opacity: 1;
-            transform: translateX(0);
-            color: var(--accent);
-        }
-
-        /* Footer/Team */
-        .footer {
-            margin-top: auto;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            font-family: 'Fira Code', monospace;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Responsive Tasarım */
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-                padding: 32px 24px;
-            }
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            .ascii-container {
-                min-height: 200px;
-            }
-            #ascii-art {
-                font-size: 5px;
-                line-height: 5px;
-            }
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+            #ascii-display { font-size: 5px; line-height: 5px; }
+            body { padding: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Sol Taraf -->
-        <div class="profile-section">
-            <div class="header">
-                <h1>Burak</h1>
-                <h2>> Developer & Student</h2>
+    <div class="dashboard">
+        
+        <!-- SOL PANEL: Terminal Bio -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="window-controls">
+                    <div class="ctrl ctrl-close"></div>
+                    <div class="ctrl ctrl-min"></div>
+                    <div class="ctrl ctrl-max"></div>
+                </div>
+                <span>burak@s24-ultra:~</span>
             </div>
-
-            <div class="description">
-                <p>
-                    TÜBİTAK Fen Lisesi yolunda (şu an yedek listedeyim) bir öğrenciyim. 
-                    <span class="highlight">JavaScript, Python ve Luau</span> odaklı sistemler geliştiriyorum. 
-                    GitHub ve Render üzerindeki tüm Discord bot altyapılarımı tamamen <span class="highlight">S24 Ultra</span> üzerinden kodluyor ve yönetiyorum.
-                </p>
-            </div>
-
-            <div class="tech-stack">
-                <span class="tech-item">JavaScript</span>
-                <span class="tech-item">Python</span>
-                <span class="tech-item">Luau</span>
-                <span class="tech-item">HTML/CSS</span>
-                <span class="tech-item">Mobile Dev</span>
-                <span class="tech-item">PS5</span>
-            </div>
-
-            <div class="footer">
-                <span>// TEAM: Rizza & Emoc</span>
-                <span>v1.0.0</span>
-            </div>
-        </div>
-
-        <!-- Sağ Taraf -->
-        <div class="visual-section">
             
-            <!-- ASCII Art Area -->
-            <div class="ascii-container">
-                <div class="ascii-header">
-                    <span>./video/Kedi.gif</span>
-                    <div class="ascii-status">
-                        <div class="status-dot"></div>
-                        <span>Rendered</span>
+            <div class="panel-body">
+                <div class="cmd-line">
+                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">whoami</span></div>
+                    <div class="output">Burak</div>
+                </div>
+
+                <div class="cmd-line">
+                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">cat education.txt</span></div>
+                    <div class="output">
+                        - 8. Sınıf Öğrencisi<br>
+                        - <span class="output-highlight">TÜBİTAK Fen Lisesi</span> (Yedek Listede Bekliyor)
                     </div>
                 </div>
-                
-                <!-- GIF İşleme Alanı -->
-                <pre id="ascii-art">Loading GIF...</pre>
-                
-                <!-- GIF (Görünmez, sadece veri çekmek için) -->
-                <!-- NOT: Gerçek bir projede './video/Kedi.gif' olarak değiştirin -->
-                <img id="gif-image" src="./gif/kedi.gif" alt="Cat GIF" crossorigin="anonymous">
-                <canvas id="hidden-canvas"></canvas>
-            </div>
 
-            <!-- Bağlantılar -->
-            <div class="links">
-                <a href="#" class="link-item">
-                    <div class="link-left">
-                        <i class="fa-brands fa-github link-icon"></i>
-                        <span>GitHub</span>
+                <div class="cmd-line">
+                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">systemctl status dev-environment</span></div>
+                    <div class="output">
+                        ● Cihaz: <span class="output-highlight">Samsung Galaxy S24 Ultra</span> (Tamamen mobilden geliştirme)<br>
+                        ● Diller:<br>
+                        <div class="tag-group">
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">Python</span>
+                            <span class="tag">Luau</span>
+                            <span class="tag">HTML/CSS</span>
+                        </div>
                     </div>
-                    <i class="fa-solid fa-arrow-right link-arrow"></i>
-                </a>
-                
-                <a href="#" class="link-item">
-                    <div class="link-left">
-                        <i class="fa-brands fa-instagram link-icon"></i>
-                        <span>Instagram</span>
-                    </div>
-                    <i class="fa-solid fa-arrow-right link-arrow"></i>
-                </a>
-                
-                <a href="#" class="link-item">
-                    <div class="link-left">
-                        <i class="fa-solid fa-film link-icon"></i>
-                        <span>GIPHY</span>
-                    </div>
-                    <i class="fa-solid fa-arrow-right link-arrow"></i>
-                </a>
-                
-                <a href="mailto:mailin@gmail.com" class="link-item">
-                    <div class="link-left">
-                        <i class="fa-regular fa-envelope link-icon"></i>
-                        <span>Email</span>
-                    </div>
-                    <i class="fa-solid fa-arrow-right link-arrow"></i>
-                </a>
-            </div>
+                </div>
 
+                <div class="cmd-line">
+                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">./fetch-projects.sh</span></div>
+                    <div class="output">
+                        > Discord Bot Altyapıları (Aktif)<br>
+                        > Sunucular: GitHub & Render<br>
+                        > Ekip: <span class="output-highlight">Rizza</span>, <span class="output-highlight">Emoc</span> & Burak
+                    </div>
+                </div>
+
+                <div class="cmd-line">
+                    <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">grep "hobbies" user.config</span></div>
+                    <div class="output">
+                        > "PS5 Platinum Kupa Avcılığı"<br>
+                        > "Mobil Geliştirme"
+                    </div>
+                </div>
+
+                <div class="links-menu">
+                    <a href="https://github.com" target="_blank" class="nav-link">
+                        <i class="fa-brands fa-github"></i> <span>GitHub Profili / Bot Repoları</span>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" class="nav-link">
+                        <i class="fa-brands fa-instagram"></i> <span>Instagram Adresim</span>
+                    </a>
+                    <a href="https://giphy.com" target="_blank" class="nav-link">
+                        <i class="fa-solid fa-film"></i> <span>GIPHY Sticker Koleksiyonu</span>
+                    </a>
+                    <a href="mailto:mailin@gmail.com" class="nav-link">
+                        <i class="fa-solid fa-envelope"></i> <span>Gmail İle İletişim</span>
+                    </a>
+                </div>
+            </div>
         </div>
+
+        <!-- SAĞ PANEL: ASCII Animasyon -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>./video/Kedi.gif - ASCII Player (Multi-Frame)</span>
+                <span class="frame-counter" id="frame-info">Frame: 0/0</span>
+            </div>
+            
+            <div class="panel-body" style="display: flex; flex-direction: column;">
+                <div class="ascii-wrapper">
+                    <!-- GIF Kareleri Buraya Çizilecek -->
+                    <pre id="ascii-display">Yükleniyor...</pre>
+                </div>
+                
+                <div class="status-bar">
+                    <span id="anim-status">AĞ BEKLENİYOR...</span>
+                    <span>Çözünürlük: Yüksek (100x Char)</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- ASCII GIF Script -->
+    <!-- GIF Parse kütüphanesi (Vercel/GitHub Pages üzerinde çalışır) -->
+    <!-- GIF'in tüm karelerini (framelerini) ayıklamamızı sağlar -->
+    <script src="https://unpkg.com/gifuct-js/dist/gifuct-js.min.js"></script>
+    
     <script>
-        // Kedi resmi/gif'ini ASCII'ye çeviren script.
-        // Uyarı: Tarayıcılar standart img etiketi ile animasyonlu GIF'in karelerine (frame) kolayca erişemez.
-        // Bu yüzden bu kod, GIF'in yüklendiği andaki ilk karesini (veya statik bir resmi) ASCII'ye çevirir.
-        // Vercel ve GitHub Pages üzerinde çalışır.
+        document.addEventListener('DOMContentLoaded', () => {
+            const asciiDisplay = document.getElementById('ascii-display');
+            const statusEl = document.getElementById('anim-status');
+            const frameInfo = document.getElementById('frame-info');
+            
+            // Parlaklıktan karakterlere geçiş (Koyu arka planda: boşluk=siyah, @=beyaz)
+            // Detaylı ASCII karakter seti:
+            const DENSITY = " .'`^\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+            
+            let frames = [];
+            let currentFrameIndex = 0;
+            let asciiFrames = []; // Önceden hesaplanmış ASCII metinleri
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const canvas = document.getElementById("hidden-canvas");
-            const ctx = canvas.getContext("2d");
-            const img = document.getElementById("gif-image");
-            const asciiArt = document.getElementById("ascii-art");
-
-            // ASCII karakter yoğunluk haritası (Koyudan açığa)
-            const density = ' .:-=+*#%@';
-
-            // Çözünürlük ayarı (Karakter sayısı)
-            // Genişliği sabitleyip yüksekliği en-boy oranına göre hesaplayacağız.
-            const asciiWidth = 60; 
-
-            img.onload = () => {
-                // En boy oranını koru (Terminal fontları genelde boyuna uzundur, bu yüzden yüksekliği bir katsayı ile çarpıyoruz)
-                const ratio = img.height / img.width;
-                const asciiHeight = Math.floor(asciiWidth * ratio * 0.55); // 0.55 font aspect ratio telafisi
-
-                canvas.width = asciiWidth;
-                canvas.height = asciiHeight;
-
-                // Resmi canvas'a çiz (küçülterek)
-                ctx.drawImage(img, 0, 0, asciiWidth, asciiHeight);
-
-                // Pixel verilerini al
-                const imgData = ctx.getImageData(0, 0, asciiWidth, asciiHeight);
-                const pixels = imgData.data;
-
-                let asciiStr = "";
-
-                // Pixelleri dolaş (R, G, B, A sıralı)
-                for (let i = 0; i < pixels.length; i += 4) {
-                    const r = pixels[i];
-                    const g = pixels[i + 1];
-                    const b = pixels[i + 2];
+            async function init() {
+                try {
+                    statusEl.textContent = "DOSYA ÇEKİLİYOR: ./video/Kedi.gif";
+                    statusEl.style.color = "var(--accent-yellow)";
                     
-                    // Parlaklık hesapla (Grayscale)
-                    const avg = (r + g + b) / 3;
+                    const response = await fetch('./gif/kedi.gif');
                     
-                    // Parlaklığı ASCII karakter indeksine dönüştür
-                    const charIndex = Math.floor(avg / 255 * (density.length - 1));
-                    
-                    // Karakteri ekle
-                    asciiStr += density.charAt(charIndex);
-
-                    // Satır sonuna geldiysek alt satıra geç (piksel dizisi tek boyutlu olduğu için)
-                    if ((i / 4 + 1) % asciiWidth === 0) {
-                        asciiStr += "\n";
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
                     }
-                }
-
-                // Ekrana bas
-                asciiArt.textContent = asciiStr;
-            };
-
-            // Resim yüklenmezse (Örn: ./video/Kedi.gif dosyası henüz yoksa) yedek metin
-            img.onerror = () => {
-                asciiArt.textContent = 
+                    
+                    statusEl.textContent = "VERİ OKUNUYOR (ARRAY BUFFER)...";
+                    const buffer = await response.arrayBuffer();
+                    
+                    statusEl.textContent = "GIF PARÇALANIYOR (FRAMES)...";
+                    // window.parseGIF ve window.decompressFrames 'gifuct-js' kütüphanesinden gelir
+                    const parsedGif = parseGIF(buffer);
+                    frames = decompressFrames(parsedGif, true);
+                    
+                    if (frames.length === 0) throw new Error("Frame bulunamadı.");
+                    
+                    statusEl.textContent = "ASCII RENDER İŞLEMİ (HER FRAME İÇİN)...";
+                    await renderAllFramesToAscii();
+                    
+                    statusEl.textContent = "AKTİF (OYNATILIYOR)";
+                    statusEl.style.color = "var(--accent-green)";
+                    
+                    // Animasyonu başlat
+                    playAnimation();
+                    
+                } catch (err) {
+                    console.error(err);
+                    statusEl.textContent = "HATA: DOSYA BULUNAMADI VEYA OKUNAMADI";
+                    statusEl.style.color = "var(--accent-red)";
+                    asciiDisplay.textContent = 
 ` /\_/\
 ( o.o )
  > ^ <
-[Error: ./video/Kedi.gif not found]
-[Place your GIF in the correct path]`;
-            };
 
-            // Zorla yüklemeyi tetikle (Önbellekten gelirse diye)
-            if (img.complete) {
-                img.onload();
+[Sistem Hatası]: ./video/Kedi.gif bulunamadı.
+[Çözüm]: Projeyi Vercel/GitHub'a yüklerken kök dizinde 
+'video' klasörü oluşturup içine 'Kedi.gif' dosyasını koyduğundan emin ol.`;
+                }
             }
+
+            async function renderAllFramesToAscii() {
+                const width = frames[0].dims.width;
+                const height = frames[0].dims.height;
+                
+                // GIF karelerinin üst üste binme (disposal) mantığını işlemek için Canvas
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+                
+                // ASCII için küçültülecek Canvas
+                const asciiWidth = 90; // Yüksek çözünürlük (Karakter genişliği)
+                const ratio = height / width;
+                // Terminal fontları genelde uzun olduğu için 0.45 katsayısı ile boyu düzeltiyoruz
+                const asciiHeight = Math.floor(asciiWidth * ratio * 0.45); 
+                
+                const scaleCanvas = document.createElement('canvas');
+                scaleCanvas.width = asciiWidth;
+                scaleCanvas.height = asciiHeight;
+                const scaleCtx = scaleCanvas.getContext('2d', { willReadFrequently: true });
+
+                for (let i = 0; i < frames.length; i++) {
+                    const frame = frames[i];
+                    
+                    // Çerçeve (Patch) pikselleri
+                    const patchCanvas = document.createElement('canvas');
+                    patchCanvas.width = frame.dims.width;
+                    patchCanvas.height = frame.dims.height;
+                    const patchCtx = patchCanvas.getContext('2d');
+                    
+                    const patchData = new ImageData(
+                        new Uint8ClampedArray(frame.patch), 
+                        frame.dims.width, 
+                        frame.dims.height
+                    );
+                    patchCtx.putImageData(patchData, 0, 0);
+                    
+                    // Eğer disposal type 2 ise önceki framei temizle
+                    if (i > 0 && frames[i-1].disposalType === 2) {
+                        tempCtx.clearRect(
+                            frames[i-1].dims.left, 
+                            frames[i-1].dims.top, 
+                            frames[i-1].dims.width, 
+                            frames[i-1].dims.height
+                        );
+                    }
+                    
+                    // Yeni framei üstüne çiz
+                    tempCtx.drawImage(patchCanvas, frame.dims.left, frame.dims.top);
+                    
+                    // Boyutu küçült (ASCII için)
+                    scaleCtx.clearRect(0, 0, asciiWidth, asciiHeight);
+                    scaleCtx.drawImage(tempCanvas, 0, 0, asciiWidth, asciiHeight);
+                    
+                    const imageData = scaleCtx.getImageData(0, 0, asciiWidth, asciiHeight).data;
+                    let frameAscii = "";
+                    
+                    for (let p = 0; p < imageData.length; p += 4) {
+                        const r = imageData[p];
+                        const g = imageData[p+1];
+                        const b = imageData[p+2];
+                        const a = imageData[p+3]; // Alpha (Transparanlık)
+                        
+                        if (a < 100) { // Transparan veya çok saydam kısımlar
+                            frameAscii += " ";
+                        } else {
+                            // Grayscale ortalama
+                            const avg = (r + g + b) / 3;
+                            // Parlaklığı DENSITY dizisinin uzunluğuna oranla
+                            const charIndex = Math.floor((avg / 255) * (DENSITY.length - 1));
+                            frameAscii += DENSITY[charIndex];
+                        }
+                        
+                        // Satır sonu kontrolü
+                        if (((p / 4) + 1) % asciiWidth === 0) {
+                            frameAscii += "\n";
+                        }
+                    }
+                    
+                    // Frame'i ve bekleme süresini kaydet (Eğer delay 0 ise varsayılan 100ms yap)
+                    let frameDelay = frame.delay;
+                    if (!frameDelay || frameDelay < 20) frameDelay = 100;
+                    
+                    asciiFrames.push({
+                        text: frameAscii,
+                        delay: frameDelay
+                    });
+                }
+            }
+
+            function playAnimation() {
+                if (asciiFrames.length === 0) return;
+                
+                const currentFrame = asciiFrames[currentFrameIndex];
+                asciiDisplay.textContent = currentFrame.text;
+                frameInfo.textContent = `Frame: ${currentFrameIndex + 1}/${asciiFrames.length}`;
+                
+                currentFrameIndex = (currentFrameIndex + 1) % asciiFrames.length;
+                
+                // Döngüyü frame süresine göre devam ettir
+                setTimeout(playAnimation, currentFrame.delay);
+            }
+
+            // Script'i başlat
+            init();
         });
     </script>
 </body>
