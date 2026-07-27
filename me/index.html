@@ -134,15 +134,17 @@
             padding: 16px;
             position: relative;
             overflow: hidden;
+            min-height: 240px;
         }
 
         #ascii-display {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 6px;
-            line-height: 6px;
+            font-size: 5.5px;
+            line-height: 5.5px;
             white-space: pre;
             color: var(--accent-green);
             text-align: center;
+            transition: opacity 0.2s ease;
         }
 
         .status-bar {
@@ -157,7 +159,7 @@
             margin-top: 16px;
         }
 
-        #anim-status { color: var(--accent-yellow); }
+        #anim-status { color: var(--accent-yellow); font-weight: bold; }
         .frame-counter { font-variant-numeric: tabular-nums; }
 
         .links-menu {
@@ -192,7 +194,7 @@
 
         @media (max-width: 900px) {
             .dashboard { grid-template-columns: 1fr; }
-            #ascii-display { font-size: 4.5px; line-height: 4.5px; }
+            #ascii-display { font-size: 4px; line-height: 4px; }
             body { padding: 1rem; }
         }
     </style>
@@ -201,7 +203,7 @@
 
     <div class="dashboard">
         
-        <!-- SOL PANEL: Terminal Bio -->
+        <!-- SOL PANEL -->
         <div class="panel">
             <div class="panel-header">
                 <div class="window-controls">
@@ -229,7 +231,7 @@
                 <div class="cmd-line">
                     <div><span class="prompt">burak@admin</span>:<span class="path">~</span>$ <span class="cmd">systemctl status dev-environment</span></div>
                     <div class="output">
-                        ● Cihaz: <span class="output-highlight">Samsung Galaxy S24 Ultra</span> (Tamamen mobilden geliştirme)<br>
+                        ● Cihaz: <span class="output-highlight">Samsung Galaxy S24 Ultra</span> (Mobil Geliştirme)<br>
                         ● Diller:<br>
                         <div class="tag-group">
                             <span class="tag">JavaScript</span>
@@ -274,21 +276,26 @@
             </div>
         </div>
 
-        <!-- SAĞ PANEL: ASCII Animasyon -->
+        <!-- SAĞ PANEL -->
         <div class="panel">
             <div class="panel-header">
-                <span>./gif/kedi.gif - Multi-Frame ASCII Player</span>
-                <span class="frame-counter" id="frame-info">Frame: 0/0</span>
+                <span>./gif/kedi.gif [Live Stream]</span>
+                <span class="frame-counter" id="frame-info">Frame: --/--</span>
             </div>
             
             <div class="panel-body" style="display: flex; flex-direction: column;">
                 <div class="ascii-wrapper">
-                    <pre id="ascii-display">Yükleniyor...</pre>
+                    <pre id="ascii-display">
+  /\_/\  
+ ( o.o ) 
+  > ^ <  
+[Sistem Başlatılıyor...]
+                    </pre>
                 </div>
                 
                 <div class="status-bar">
-                    <span id="anim-status">AĞ BEKLENİYOR...</span>
-                    <span>Mod: Full-Frame Render</span>
+                    <span id="anim-status">ÇEKİLİYOR...</span>
+                    <span id="speed-info">Hız: Realtime</span>
                 </div>
             </div>
         </div>
@@ -309,51 +316,66 @@
             let currentFrameIndex = 0;
             let asciiFrames = [];
 
+            // Anında akıcı hissettiren ön yükleme animasyonu (bekleme hissini yok eder)
+            let bootFrames = [
+                "  /\\_/\\  \n ( o.o ) \n  > ^ <  \n[Bağlantı Kuruluyor...]",
+                "  /\\_/\\  \n ( -.- ) \n  > ^ <  \n[Buffer Hazırlanıyor...]",
+                "  /\\_/\\  \n ( o.o ) \n  > ^ <  \n[Frame'ler Çözülüyor...]"
+            ];
+            let bootIndex = 0;
+            const bootInterval = setInterval(() => {
+                if(asciiFrames.length === 0) {
+                    asciiDisplay.textContent = bootFrames[bootIndex % bootFrames.length];
+                    bootIndex++;
+                }
+            }, 300);
+
             async function init() {
                 try {
-                    statusEl.textContent = "DOSYA ÇEKİLİYOR: ./gif/kedi.gif";
-                    statusEl.style.color = "var(--accent-yellow)";
+                    statusEl.textContent = "BAĞLANTI KURULDU";
+                    statusEl.style.color = "var(--accent-blue)";
                     
-                    // Vercel kök dizini 'me' olduğu için yol doğrudan ./gif/kedi.gif olmalıdır
                     const response = await fetch('./gif/kedi.gif');
                     
                     if (!response.ok) {
                         throw new Error(`HTTP Error: ${response.status}`);
                     }
                     
-                    statusEl.textContent = "BUFFER OKUNUYOR...";
+                    statusEl.textContent = "AKIŞ AKTİF";
                     const buffer = await response.arrayBuffer();
                     
-                    statusEl.textContent = "GIF FRAMELERİ ÇÖZÜLÜYOR...";
+                    statusEl.textContent = "PARSE EDİLİYOR...";
                     const parsedGif = parseGIF(buffer);
                     frames = decompressFrames(parsedGif, true);
                     
                     if (frames.length === 0) throw new Error("Frame bulunamadı.");
                     
-                    statusEl.textContent = "TÜM FRAMELER ASCII'YE ÇEVRİLİYOR...";
+                    statusEl.textContent = "RENDER EDİLİYOR...";
                     await renderAllFramesToAscii();
                     
-                    statusEl.textContent = "OYNATILIYOR (LIVE)";
+                    clearInterval(bootInterval);
+                    statusEl.textContent = "CANLI OYNATILIYOR";
                     statusEl.style.color = "var(--accent-green)";
                     
                     playAnimation();
                     
                 } catch (err) {
+                    clearInterval(bootInterval);
                     console.error(err);
-                    statusEl.textContent = "HATA: DOSYA OKUNAMADI";
+                    statusEl.textContent = "HATA: YOL BULUNAMADI";
                     statusEl.style.color = "var(--accent-red)";
                     asciiDisplay.textContent = 
 ` /\\_/\\
-( o.o )
+( x.x )
  > ^ <
 
-[Sistem Hatası]: ./gif/kedi.gif bulunamadı.
-[Çözüm]: 'me' klasörünün içinde 'gif' adında bir klasör 
-olduğundan ve içinde 'kedi.gif' yazdığından emin ol.`;
+[Sistem Uyarısı]: ./gif/kedi.gif dosyasına erişilemedi.
+[İpucu]: 'me/gif/kedi.gif' yolunu kontrol et.`;
                 }
             }
 
             async function renderAllFramesToAscii() {
+                if(!frames.length) return;
                 const width = frames[0].dims.width;
                 const height = frames[0].dims.height;
                 
@@ -362,7 +384,7 @@ olduğundan ve içinde 'kedi.gif' yazdığından emin ol.`;
                 tempCanvas.height = height;
                 const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
                 
-                const asciiWidth = 85; 
+                const asciiWidth = 75; 
                 const ratio = height / width;
                 const asciiHeight = Math.floor(asciiWidth * ratio * 0.45); 
                 
@@ -423,7 +445,7 @@ olduğundan ve içinde 'kedi.gif' yazdığından emin ol.`;
                     }
                     
                     let frameDelay = frame.delay;
-                    if (!frameDelay || frameDelay < 20) frameDelay = 100;
+                    if (!frameDelay || frameDelay < 20) frameDelay = 80;
                     
                     asciiFrames.push({
                         text: frameAscii,
