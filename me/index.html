@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burak | Developer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #09090b;
+            --surface: #18181b;
+            --surface-hover: #27272a;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --accent: #10b981;
+            --border: #3f3f46;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+
+        /* Ana Konteyner */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sol Taraf: Profil ve Hakkımda */
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            line-height: 1;
+        }
+
+        .header h2 {
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--accent);
+        }
+
+        .description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            text-align: justify;
+        }
+        
+        .highlight {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Teknoloji Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tech-item {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .tech-item:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        /* Sağ Taraf: ASCII Art ve Linkler */
+        .visual-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ASCII Art Konteyneri */
+        .ascii-container {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            min-height: 250px;
+        }
+
+        .ascii-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        
+        .ascii-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* GIF'i ASCII'ye çevirmek için Canvas ve Pre */
+        #ascii-art {
+            font-family: 'Fira Code', monospace;
+            font-size: 6px; /* Yoğunluk için küçük font */
+            line-height: 6px;
+            white-space: pre;
+            color: var(--text-primary);
+            text-align: center;
+            user-select: none;
+            overflow: hidden;
+        }
+        
+        /* Gizli öğeler */
+        #hidden-canvas, #gif-image {
+            display: none;
+        }
+
+        /* Linkler (Minimalist) */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .link-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .link-icon {
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .link-arrow {
+            color: var(--text-secondary);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .link-item:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--text-secondary);
+        }
+
+        .link-item:hover .link-icon {
+            color: var(--text-primary);
+        }
+
+        .link-item:hover .link-arrow {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--accent);
+        }
+
+        /* Footer/Team */
+        .footer {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Responsive Tasarım */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 32px 24px;
+            }
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            .ascii-container {
+                min-height: 200px;
+            }
+            #ascii-art {
+                font-size: 5px;
+                line-height: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sol Taraf -->
+        <div class="profile-section">
+            <div class="header">
+                <h1>Burak</h1>
+                <h2>> Developer & Student</h2>
+            </div>
+
+            <div class="description">
+                <p>
+                    TÜBİTAK Fen Lisesi yolunda (şu an yedek listedeyim) bir öğrenciyim. 
+                    <span class="highlight">JavaScript, Python ve Luau</span> odaklı sistemler geliştiriyorum. 
+                    GitHub ve Render üzerindeki tüm Discord bot altyapılarımı tamamen <span class="highlight">S24 Ultra</span> üzerinden kodluyor ve yönetiyorum.
+                </p>
+            </div>
+
+            <div class="tech-stack">
+                <span class="tech-item">JavaScript</span>
+                <span class="tech-item">Python</span>
+                <span class="tech-item">Luau</span>
+                <span class="tech-item">HTML/CSS</span>
+                <span class="tech-item">Mobile Dev</span>
+                <span class="tech-item">PS5</span>
+            </div>
+
+            <div class="footer">
+                <span>// TEAM: Rizza & Emoc</span>
+                <span>v1.0.0</span>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf -->
+        <div class="visual-section">
+            
+            <!-- ASCII Art Area -->
+            <div class="ascii-container">
+                <div class="ascii-header">
+                    <span>./video/Kedi.gif</span>
+                    <div class="ascii-status">
+                        <div class="status-dot"></div>
+                        <span>Rendered</span>
+                    </div>
+                </div>
+                
+                <!-- GIF İşleme Alanı -->
+                <pre id="ascii-art">Loading GIF...</pre>
+                
+                <!-- GIF (Görünmez, sadece veri çekmek için) -->
+                <!-- NOT: Gerçek bir projede './video/Kedi.gif' olarak değiştirin -->
+                <img id="gif-image" src="./video/Kedi.gif" alt="Cat GIF" crossorigin="anonymous">
+                <canvas id="hidden-canvas"></canvas>
+            </div>
+
+            <!-- Bağlantılar -->
+            <div class="links">
+                <a href="#" class="link-item">
+                    <div class="link-left">
+                        <i class="fa-brands fa-github link-icon"></i>
+                        <span>GitHub</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-right link-arrow"></i>
+                </a>
+                
+                <a href="#" class="link-item">
+                    <div class="link-left">
+                        <i class="fa-brands fa-instagram link-icon"></i>
+                        <span>Instagram</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-right link-arrow"></i>
+                </a>
+                
+                <a href="#" class="link-item">
+                    <div class="link-left">
+                        <i class="fa-solid fa-film link-icon"></i>
+                        <span>GIPHY</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-right link-arrow"></i>
+                </a>
+                
+                <a href="mailto:mailin@gmail.com" class="link-item">
+                    <div class="link-left">
+                        <i class="fa-regular fa-envelope link-icon"></i>
+                        <span>Email</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-right link-arrow"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ASCII GIF Script -->
+    <script>
+        // Kedi resmi/gif'ini ASCII'ye çeviren script.
+        // Uyarı: Tarayıcılar standart img etiketi ile animasyonlu GIF'in karelerine (frame) kolayca erişemez.
+        // Bu yüzden bu kod, GIF'in yüklendiği andaki ilk karesini (veya statik bir resmi) ASCII'ye çevirir.
+        // Vercel ve GitHub Pages üzerinde çalışır.
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById("hidden-canvas");
+            const ctx = canvas.getContext("2d");
+            const img = document.getElementById("gif-image");
+            const asciiArt = document.getElementById("ascii-art");
+
+            // ASCII karakter yoğunluk haritası (Koyudan açığa)
+            const density = ' .:-=+*#%@';
+
+            // Çözünürlük ayarı (Karakter sayısı)
+            // Genişliği sabitleyip yüksekliği en-boy oranına göre hesaplayacağız.
+            const asciiWidth = 60; 
+
+            img.onload = () => {
+                // En boy oranını koru (Terminal fontları genelde boyuna uzundur, bu yüzden yüksekliği bir katsayı ile çarpıyoruz)
+                const ratio = img.height / img.width;
+                const asciiHeight = Math.floor(asciiWidth * ratio * 0.55); // 0.55 font aspect ratio telafisi
+
+                canvas.width = asciiWidth;
+                canvas.height = asciiHeight;
+
+                // Resmi canvas'a çiz (küçülterek)
+                ctx.drawImage(img, 0, 0, asciiWidth, asciiHeight);
+
+                // Pixel verilerini al
+                const imgData = ctx.getImageData(0, 0, asciiWidth, asciiHeight);
+                const pixels = imgData.data;
+
+                let asciiStr = "";
+
+                // Pixelleri dolaş (R, G, B, A sıralı)
+                for (let i = 0; i < pixels.length; i += 4) {
+                    const r = pixels[i];
+                    const g = pixels[i + 1];
+                    const b = pixels[i + 2];
+                    
+                    // Parlaklık hesapla (Grayscale)
+                    const avg = (r + g + b) / 3;
+                    
+                    // Parlaklığı ASCII karakter indeksine dönüştür
+                    const charIndex = Math.floor(avg / 255 * (density.length - 1));
+                    
+                    // Karakteri ekle
+                    asciiStr += density.charAt(charIndex);
+
+                    // Satır sonuna geldiysek alt satıra geç (piksel dizisi tek boyutlu olduğu için)
+                    if ((i / 4 + 1) % asciiWidth === 0) {
+                        asciiStr += "\n";
+                    }
+                }
+
+                // Ekrana bas
+                asciiArt.textContent = asciiStr;
+            };
+
+            // Resim yüklenmezse (Örn: ./video/Kedi.gif dosyası henüz yoksa) yedek metin
+            img.onerror = () => {
+                asciiArt.textContent = 
+` /\_/\
+( o.o )
+ > ^ <
+[Error: ./video/Kedi.gif not found]
+[Place your GIF in the correct path]`;
+            };
+
+            // Zorla yüklemeyi tetikle (Önbellekten gelirse diye)
+            if (img.complete) {
+                img.onload();
+            }
+        });
+    </script>
+</body>
+</html>
