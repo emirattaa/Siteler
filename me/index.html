@@ -74,27 +74,25 @@
 <div class="card" id="redirect">
   <div class="spinner"></div>
   <h1>bcs bitly is ass</h1>
-  <p>Yönlendiriliyorsun...</p>
   <div class="bar"><span></span></div>
 </div>
 
 <div class="card hidden" id="nothing">
-  <h1>Burada bir şey yok 👀</h1>
-  <p>Doğru bağlantıyı kullan.</p>
+  <h1>Cursed ahh shit link</h1>
 </div>
 
 <script>
   // Yeni link eklemek için buraya bir satır ekle
   const links = {
     spf: "https://open.spotify.com/user/31mq5yg6ex4dpub2kk5fkhn472we?si=KOGApyluSxuTbthxdv0TIg&utm_source=copy-link",
-    bej: "https://ORNEK-LINK.com"
+    ig: "https://instagram.com/emirattaa"
   };
 
   // "/spf/" -> "spf"
   const slug = location.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
 
   if (links[slug]) {
-    setTimeout(() => location.replace(links[slug]), 2500);
+    setTimeout(() => location.replace(links[slug]), 1000);
   } else {
     document.getElementById("redirect").classList.add("hidden");
     document.getElementById("nothing").classList.remove("hidden");
